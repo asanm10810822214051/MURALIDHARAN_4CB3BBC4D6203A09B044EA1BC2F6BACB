@@ -1,1 +1,74 @@
+def calculate_milk_price(
+    actual_fat: float,
+    actual_snf: float,
+    quantity: float,
+    base_fat: float = 3.5,
+    base_snf: float = 8.5,
+    base_rate: float = 30.0,
+    fat_rate_per_unit: float = 4.0,
+    snf_rate_per_unit: float = 4.0
+) -> dict:
+    """
+    Calculates milk rate and total price based on base Fat and SNF standard parameters.
+    
+    Parameters:
+        actual_fat (float): Measured Fat % in the cow milk.
+        actual_snf (float): Measured SNF % in the cow milk.
+        quantity (float): Total quantity of milk in Liters or Kgs.
+        base_fat (float): Base Fat standard (e.g., 3.5%).
+        base_snf (float): Base SNF standard (e.g., 8.5%).
+        base_rate (float): Base price per unit at base Fat and SNF.
+        fat_rate_per_unit (float): Incentive/penalty rate per 1% Fat difference.
+        snf_rate_per_unit (float): Incentive/penalty rate per 1% SNF difference.
+        
+    Returns:
+        dict: Calculated final rate per unit, total amount, and adjustment details.
+    """
+    # Calculate differences from base standards
+    fat_diff = actual_fat - base_fat
+    snf_diff = actual_snf - base_snf
+    
+    # Calculate rate adjustments
+    fat_adjustment = fat_diff * fat_rate_per_unit
+    snf_adjustment = snf_diff * snf_rate_per_unit
+    
+    # Final rate per liter/kg
+    final_rate = base_rate + fat_adjustment + snf_adjustment
+    total_amount = final_rate * quantity
+    
+    return {
+        "actual_fat": actual_fat,
+        "actual_snf": actual_snf,
+        "quantity": quantity,
+        "base_rate": base_rate,
+        "final_rate_per_unit": round(final_rate, 2),
+        "total_amount": round(total_amount, 2),
+        "fat_adjustment": round(fat_adjustment, 2),
+        "snf_adjustment": round(snf_adjustment, 2)
+    }
+
+
+# --- Example Usage ---
+if __name__ == "__main__":
+    # Example input values
+    cow_milk_fat = 3.8    # Measured Fat %
+    cow_milk_snf = 8.3    # Measured SNF %
+    milk_quantity = 50.0  # Quantity in Liters
+
+    result = calculate_milk_price(
+        actual_fat=cow_milk_fat,
+        actual_snf=cow_milk_snf,
+        quantity=milk_quantity,
+        base_fat=3.5,         # Standard base Fat for cow milk
+        base_snf=8.5,         # Standard base SNF for cow milk
+        base_rate=32.0,       # Base price at 3.5 Fat / 8.5 SNF
+        fat_rate_per_unit=5.0, # Adjustment per 1.0% Fat variation
+        snf_rate_per_unit=6.0  # Adjustment per 1.0% SNF variation
+    )
+
+    print("--- Cow Milk Pricing Summary ---")
+    print(f"Quantity: {result['quantity']} L")
+    print(f"Fat: {result['actual_fat']}% | SNF: {result['actual_snf']}%")
+    print(f"Final Rate per Liter: ₹{result['final_rate_per_unit']}")
+    print(f"Total Amount Payable: ₹{result['total_amount']}")
 
